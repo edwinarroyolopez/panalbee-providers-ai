@@ -65,13 +65,21 @@ src/
 
 Keep controllers thin; keep business rules in services.
 
+Controller smell triggers immediate refactor:
+
+1. transition or validation logic duplicated in controllers
+2. payload transformation beyond basic request mapping
+3. orchestration of multiple domain actions inside controller methods
+
 ---
 
 ## 5. Validation and intake integrity
 
 - Validate every JSON intake payload before persistence.
 - Persist validation outcomes with batch (`intake_lote`) trace.
-- Reject silent partial inserts without explicit outcome reporting.
+- Reject silent partial inserts without explicit outcome reporting: la inserción parcial de proveedores debe usar `importMode: insert_valid_only`, devolver `insertedCount` / `skippedCount` y persistir el lote con resumen coherente.
+- Errores de validación de importación proveedores: clasificar con `code`, `blocksRecord` y agregar por fila; el cliente debe poder calcular insertables vs no insertables.
+- Reversión de lote de proveedores: transacción o reglas equivalentes; no eliminar proveedores de otras cargas; bloquear si hay estado distinto de `ingresado` o productos vinculados.
 - Keep DTO/schema constraints aligned with domain invariants, not temporary UI convenience.
 
 ---

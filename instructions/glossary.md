@@ -23,10 +23,25 @@ It prevents domain drift and avoids importing misleading semantics from other sy
 | `curaduria` | Human-in-the-loop review and filtering process. | Raw ingestion |
 | `descarte` | Decision to reject an entity with required reason(s). | Silent deletion |
 | `trazabilidad` | Auditable record of who/when/what/why for decisions. | Generic logs without business meaning |
+| `organization` | Internal scope record in API (`GET /auth/me`) for the single-tenant airlock; persisted historically as `Account` in Mongo. | Commercial customer account, billing profile, or multi-workspace tenant |
+| `carga` / `lote` (intake) | Unidad de importación masiva con metadatos, resumen de validación e inserción; puede referirse a productos de un proveedor o a proveedores globales. | “Batch” opaco sin id ni historia |
+| `inserción parcial` | Persistir solo filas válidas cuando el archivo mezcla errores, con `importMode: insert_valid_only` y conteos explícitos de omitidos. | Import silencioso a medias |
+| `reversión de lote` | Eliminación explícita de los registros creados por una carga (proveedores), con comprobaciones de seguridad y marca de revocación en el lote. | Borrado genérico sin vínculo al intake |
+
+## Decision types (producto)
+
+Además de `aprobar`, `descartar`, `priorizar` y `marcar_listo_siguiente_paso`, el tipo **`exportar`** registra la transición **`listo_para_exportar` → `exportado`** solo mediante el endpoint de exportación controlada (no como toggle manual).
 
 ## Decision reason vocabulary
 
 Decision reasons are structured codes plus optional free comment.
+
+Example export batch reason codes:
+
+- `salida_controlada_airlock`
+- `lote_validado_para_panalbee`
+- `revision_completa_y_coherente`
+- `alineado_con_objetivo_comercial`
 
 Example approval reason codes:
 

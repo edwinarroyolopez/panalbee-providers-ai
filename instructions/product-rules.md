@@ -126,6 +126,27 @@ Avoid fragmented mini-products inside the same app or site.
 
 ---
 
+## 10.1 Structural coherence (frontend)
+
+UI coherence includes code structure, not only visual output.
+
+For `web-providers`:
+
+- route `page.tsx` files must remain thin
+- module folders must carry behavior by responsibility (`components`, `hooks`, `services`, `types`, `utils`, `constants`)
+- avoid route-level accumulation of parsing, status catalogs, contract mapping, and business transitions
+- **shared-first components:** before creating UI under `modules/.../components`, check `web-providers/src/components`; domain-agnostic pieces live in shared space, not inside modules
+
+Smells that require immediate refactor:
+
+1. route files with mixed responsibilities (render + orchestration + transforms + catalogs)
+2. repeated status/action mapping inside route components
+3. remote orchestration spread across many inline callbacks
+4. large styled-component blocks in route files when the surface is module-level
+5. duplicate primitives (select, textarea, file input, modal chrome, status pill) coexisting in modules when a shared equivalent exists or should exist
+
+---
+
 ## 11. Traceability
 
 When the domain requires it, prefer systems that can explain **how** important states were reached, not only final snapshots.

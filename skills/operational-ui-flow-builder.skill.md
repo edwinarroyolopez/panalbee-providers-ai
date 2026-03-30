@@ -32,12 +32,16 @@ This skill follows a strict reduction-first UX bar: clarity, hierarchy, and oper
 ## Internal steps
 
 1. Define the dominant intention of the screen.
-2. Order hierarchy: context → primary action → detail.
-3. Reuse components and patterns from reference modules in the repo.
-4. Implement minimum validation for money, quantity, dates when applicable.
-5. Immediate feedback and double-submit protection.
-6. Integrate uploads when the flow needs evidence files.
-7. Check empty/error/offline for critical actions.
+2. **Search `web-providers/src/components` (and `components/ui/`)** for existing primitives and compositions; reuse or extend before adding module-local UI.
+3. Order hierarchy: context → primary action → detail.
+4. Reuse patterns from reference modules only where domain-specific; otherwise prefer shared components.
+5. Implement minimum validation for money, quantity, dates when applicable.
+6. Immediate feedback and double-submit protection.
+7. Integrate uploads when the flow needs evidence files.
+8. Check empty/error/offline for critical actions.
+9. Confirm the result does not read as starter/generic on operational surfaces.
+10. For **primary operational screens**, add contextual help via the shared help modal pattern (purpose, decisions, how to operate, actions, expectations).
+11. For **mass imports**, use the shared bulk-import panel + module hook: format copy, help, validation error list, phases, post-success reconciliation (refetch/poll), result summary—never a lone file input as the whole flow.
 
 ## Deliverables
 
@@ -48,9 +52,11 @@ This skill follows a strict reduction-first UX bar: clarity, hierarchy, and oper
 ## Rules
 
 - Do not introduce a parallel mini design system.
+- **Mandatory reuse:** non-domain UI belongs in `web-providers/src/components`; do not duplicate selects, text areas, file inputs, modals, or badges inside modules without checking shared first.
 - Avoid dense forms without hierarchy.
 - Keep copy short, operational, and non-technical for end users.
 - Reject UI that is merely functional but generic, noisy, or bureaucratic.
+- Reject shipping active pages that still feel like the template starter.
 
 ## Acceptance check
 

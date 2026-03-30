@@ -89,6 +89,37 @@ Every meaningful change must answer:
 
 If these answers are unclear, stop and clarify before coding.
 
+## Shared components and reuse (web-providers, mandatory)
+
+1. **Inventory first:** Before adding a component inside `web-providers/src/modules/<module>/components`, inspect `web-providers/src/components` (including `components/ui/`).
+2. **Placement:** If the piece is domain-agnostic (could serve more than one surface without importing module services/hooks/types), it belongs in shared `components/`, not inside a module.
+3. **No silent duplication:** Do not fork another select, modal shell, file input, textarea, or badge “because it is faster.” Extend shared primitives or compose them.
+4. **Quality bar:** A screen is not “done” if it still feels like the historical starter: generic marketing, placeholder English, template metadata, or noisy layout on routes that operators use daily.
+5. **Contextual help:** Primary operational screens must expose a consistent help entry point (shared modal pattern) with structured, operational copy—not improvised tooltips as the only documentation.
+6. **Mass imports:** Bulk JSON/file intake must use the shared bulk-import operational pattern: format explanation, validation errors visible, phased feedback, post-persist reconciliation (refetch/poll as appropriate), and outcome summary. Thin file inputs alone are insufficient.
+
+This rule applies to all UI tasks, including those driven by UX/UI agents and skills.
+
+---
+
+## Frontend architecture discipline (web-providers)
+
+In `web-providers`, route files are orchestration entrypoints, not behavior containers.
+
+Mandatory rule:
+
+> A route is structurally invalid if `page.tsx` contains logic that should live in `hooks`, `components`, `services`, `types`, `utils`, or `constants`.
+
+Minimum expected split for relevant surfaces:
+
+- data orchestration and state transitions -> module hooks
+- remote calls and payload contracts -> module services
+- reusable visual sections -> module components
+- pure transforms/parsers/formatters -> module utils
+- static options/reason catalogs/status maps -> module constants
+
+If a UI works but structure is disordered, it does not meet product quality.
+
 ---
 
 ## Airlock invariants (non-negotiable)
@@ -97,7 +128,7 @@ If these answers are unclear, stop and clarify before coding.
 - No `descartado` without structured reason.
 - No `priorizado` or `aprobado` without structured reason.
 - `aprobado` does not imply `exportado`.
-- Only `listo_para_exportar` can move to export.
+- Only `listo_para_exportar` can move to export via the export API; `exportado` is not a manual toggle.
 - Decision traceability always captures `quien`, `cuando`, `que_decision`, `por_que`.
 
 ---

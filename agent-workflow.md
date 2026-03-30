@@ -93,6 +93,74 @@ Before implementing, confirm:
 
 Do not skip steps.
 
+## web-providers shared components gate (mandatory)
+
+Before creating any **new** component under `web-providers/src/modules/**/components`:
+
+1. Search `web-providers/src/components` (primitives under `ui/`, composed pieces at top level) for an existing reusable match.
+2. If the UI is **not** domain-specific (no provider/product/decision vocabulary, no module-only hooks or services), it must **not** live under `modules/.../components`. Either reuse shared or extract to `web-providers/src/components` (or `components/ui/` for primitives).
+3. Do not add silent duplicates (“almost the same” selects, text areas, file inputs, status pills, modals) in module folders.
+
+A page or flow is **not** acceptable if it still reads like a generic starter, placeholder copy, or bureaucratic admin chrome on **active** operational surfaces.
+
+Operational UX agents and skills must enforce this gate together with the master UX/UI rule.
+
+---
+
+## Rule — Contextual help per operational screen (mandatory)
+
+Every **relevant operational screen** in `web-providers` must be evaluated for contextual help.
+
+For primary airlock surfaces (at minimum: provider list, provider detail / curation desk, export surfaces, major intake flows):
+
+- Expose a **visible help control** (icon or equivalent) that opens a **single reusable help pattern** (shared modal shell + structured sections), not ad-hoc paragraphs scattered in the layout.
+- Help content must answer, in clear operational language: what the screen is for, which decisions happen there, how to run the flow correctly, what important actions mean, and what the operator should expect from the system.
+- Do not ship one-off help modals per screen when the same shared pattern can carry screen-specific copy via props or module constants.
+
+---
+
+## Rule — Bulk / mass import flows (mandatory)
+
+Any **mass import** (JSON batches, files, or equivalent) must be implemented as a **reusable operational flow**, not an isolated `input type="file"` with only a toast on failure.
+
+The UX must include, as applicable:
+
+- Clear description of the **expected file shape** (root array vs wrapper object, required fields, dedupe hints).
+- Visible access to help (format + operational context).
+- **Pre-submit validation** feedback (server validation errors listed, not only a count).
+- Feedback that processing **started** (phase / progress, not silent spinners).
+- **Reconciliation feedback** after persistence: if the API is synchronous, use explicit phases plus **post-write polling or refetch** of authoritative lists until the UI reflects the new batch (or a bounded timeout), so operators see “processing → synced.” If the API later becomes async, the same shell should accept a job-status poll without rewriting screens.
+- **Outcome summary**: inserted counts, validation summary, conflict/dedupe messaging from the contract.
+- **Provider mass import** must use the operational contract: summary insertable vs not insertable, errores con `code` y fila, inserción parcial explícita (`insert_valid_only`), lote `proveedores` persistido, listado y reversión segura en UI — no volver a un único “válido/inválido” opaco.
+- Operational copy (Spanish product language per glossary); no starter placeholder text on active routes.
+
+Orchestration belongs in **module hooks**; shared **presentation** belongs under `web-providers/src/components`. Route `page.tsx` files must not absorb bulk-import state machines.
+
+---
+
+## web-providers structural rule (mandatory)
+
+A route is not accepted if `page.tsx` absorbs logic that belongs to module layers.
+
+Required module-first split:
+
+- `components/` for visual blocks
+- `hooks/` for orchestration and stateful behavior
+- `services/` for remote calls/contracts
+- `types/` for shared module types
+- `utils/` for pure transforms/parsers/formatters
+- `constants/` for catalogs/config options
+
+`page.tsx` must stay a thin route entrypoint that composes module pieces.
+
+Immediate refactor triggers:
+
+1. route file mixes remote orchestration, parsing, and full UI blocks
+2. repeated inline handlers with business transitions
+3. status/decision catalogs declared inside route files
+4. helper functions inside render-heavy route files
+5. route file becomes the only place where behavior can be understood
+
 ---
 
 ## Business rule check (mandatory)
@@ -130,6 +198,7 @@ Use `ai/skills/backend-app-contract-sync.skill.md` as needed.
 - `priorizado` and `aprobado` require at least one structured reason.
 - `aprobado` is not `exportado`.
 - export is allowed only from `listo_para_exportar`.
+- `exportado` is reached only through the controlled export path (decision `exportar`), not via generic state PATCH.
 
 ---
 

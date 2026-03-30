@@ -21,10 +21,16 @@ This agent enforces a non-negotiable quality bar: UI must feel inevitable, preci
 ## Tasks
 
 - Align with `ai/instructions/template-web-design-system.md` and active domain glossary.
+- **Before approving new module components:** verify `web-providers/src/components` was checked; reject domain-agnostic UI trapped under `modules/.../components` or duplicated primitives.
 - Primary action, loading, empty, error, and blocked states must be obvious.
-- Copy matches **glossary** and product voice.
+- Copy matches **glossary** and product voice (no starter/template placeholder on active surfaces).
 - Reject generic admin patterns, visual noise, and unnecessary interaction friction.
+- Reject pages that feel starter-like, generic, bureaucratic, or mediocre on operational routes.
 - Verify cards/modals/tables optimize decision speed and confidence.
+- Reject structurally bloated route files that hide UX behavior in `page.tsx`.
+- Require module-level separation for UI behavior (`components`, `hooks`, `services`, `utils`, `constants`) **while** keeping non-domain UI in shared `components/`.
+- **Contextual help:** primary operational screens must offer the shared help pattern (visible control + structured modal content). Reject screens that rely only on inline hints or improvised copy for operator guidance.
+- **Mass imports:** reject flows that are only a bare file input + toast. Require format explanation, visible validation errors, phased/progress feedback, reconciliation (refetch/poll after persist), and outcome summary via the shared bulk-import pattern.
 
 ## Mandatory review questions
 

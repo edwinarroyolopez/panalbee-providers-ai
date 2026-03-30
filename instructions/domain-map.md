@@ -12,7 +12,7 @@ It complements, and does not duplicate, inherited implementation rules.
 | `usuario` | Internal actor that authenticates and executes operational decisions. v1 starts with `admin`. | organization |
 | `proveedor` | External supplier candidate entering the airlock for evaluation. | organization |
 | `producto` | Candidate product associated to one provider, reviewed inside the airlock. | organization |
-| `intake_lote` | Import batch metadata (source file, type, validation summary, timestamps). | organization |
+| `intake_lote` | Import batch metadata (kind `productos` \| `proveedores`, validation summary, errores detallados cuando aplica, actor, timestamps, revocación). | organization |
 | `decision` | Auditable operational event taken over provider or product. | organization |
 | `motivo` | Structured reason code used to justify a decision. | catalog (organization) |
 | `exportacion` | Controlled output record for approved products (JSON/CSV in v1). | organization |
@@ -23,6 +23,8 @@ It complements, and does not duplicate, inherited implementation rules.
 - A `proveedor` and a `producto` can each receive many `decision` events.
 - A `decision` references one or more `motivo` codes and optional comment.
 - `intake_lote` groups import operations for providers/products and stores validation outcomes.
+- Cargas de **proveedores** (`kind: proveedores`): sin `providerId` en el lote; cada proveedor insertado referencia el lote (`intakeLoteId`). Inserción puede ser total (`all_or_nothing`) o parcial (`insert_valid_only`) con resumen explícito.
+- Reversión de lote de proveedores: elimina solo proveedores de esa carga, solo si siguen `ingresado` y sin productos; el documento de lote conserva `revokedAt` / `revokedByUserId`.
 - `exportacion` groups products exported from `listo_para_exportar`.
 
 ## State model (snapshot layer)
@@ -81,7 +83,7 @@ A state change without a supporting decision is invalid for governed transitions
 
 | Context | Owns |
 |--------|------|
-| Identity | Internal users and authentication (`telefono + password`) |
+| Identity | Internal users and authentication (`telefono + password`); scope interno expuesto como `organization` en `GET /auth/me` (sin modelo comercial tier/billing en v1) |
 | Intake | Provider/product JSON ingestion, validation, lot trace |
 | Curation | Evaluation, decisions, reasons, state transitions |
 | Output | JSON/CSV export orchestration and export traceability |

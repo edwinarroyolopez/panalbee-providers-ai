@@ -1,10 +1,10 @@
-# Product discipline (for projects built on this starter)
+# Product discipline (active product)
 
 ## 1. What this document is
 
-These rules apply to **the product you are building** after you instantiate the starter. They are not tied to any former domain.
+These rules apply to the active product and are not tied to any former template domain.
 
-Use your filled **`project-context.template.md`**, **`domain-map.template.md`**, and **`glossary.template.md`** to resolve vocabulary, entities, and priorities.
+Use `project-context.md`, `domain-map.md`, `feature-map.md`, and `glossary.md` to resolve vocabulary, entities, and priorities.
 
 ---
 
@@ -99,7 +99,7 @@ Separate:
 For each feature ask:
 
 - what is universal to this product?
-- what is specific to a tenant profile, industry mode, or workspace type?
+- what is specific to an operational mode or future user profile (if defined)?
 - which capabilities or flags enable that behavior?
 
 Do not force every customer into one rigid operational model unless your context says so.
@@ -168,7 +168,7 @@ The product should feel like **complexity removed on the user’s side**, not co
 
 ## 17. Optional: dominant operation per profile
 
-If your product defines **profiles** (e.g. industry modes, workspace types), each profile may define a **dominant operation** (the thing users care about first).
+If your product defines future **profiles** (e.g. operator/reviewer modes), each profile may define a dominant operation.
 
 Primary surfaces (home, dashboard, main CTA) should reflect that dominant operation for the active profile. Deep analytics or secondary areas may reuse cross-cutting blocks when semantics align.
 

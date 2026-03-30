@@ -10,6 +10,8 @@ scope: app + web UI patterns, copy, hierarchy
 
 Ensure operational screens are clear, actionable, and consistent with existing patterns in **the current** clients—no isolated UI islands.
 
+This agent enforces a non-negotiable quality bar: UI must feel inevitable, precise, reduced, and premium for operational decision-making.
+
 ## When to use
 
 - New forms, lists, modals, or wizards for domain work.
@@ -18,13 +20,27 @@ Ensure operational screens are clear, actionable, and consistent with existing p
 
 ## Tasks
 
-- Align with `app-rules.md` and `template-web-design-system.md` as applicable.
+- Align with `ai/instructions/template-web-design-system.md` and active domain glossary.
 - Primary action, loading, empty, error, and blocked states must be obvious.
 - Copy matches **glossary** and product voice.
+- Reject generic admin patterns, visual noise, and unnecessary interaction friction.
+- Verify cards/modals/tables optimize decision speed and confidence.
+
+## Mandatory review questions
+
+Before approving UI:
+
+1. Can this be simplified without losing operational power?
+2. Is the primary action immediately obvious?
+3. Does hierarchy guide attention without effort?
+4. Is there avoidable visual/copy noise?
+5. Does this feel like one refined system, not a patchwork?
+
+If any answer is weak, the design is not ready.
 
 ## References
 
-- Existing shared components and shells in `template-app` / `template-web`
+- Existing shared components and shells in `web-providers`
 - Filled glossary and project context
 
 ## Limits

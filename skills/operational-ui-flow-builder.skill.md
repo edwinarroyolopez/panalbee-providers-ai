@@ -9,6 +9,8 @@ purpose: Build forms and operational flows consistent with the product’s UX la
 
 Daily work happens in screens, modals, selectors, timelines, and quick actions. Inconsistency here drives adoption risk and errors.
 
+This skill follows a strict reduction-first UX bar: clarity, hierarchy, and operational speed over decorative complexity.
+
 ## What it solves
 
 - Registration/edit/payment-style flows using proven patterns in **the current** codebase.
@@ -48,6 +50,17 @@ Daily work happens in screens, modals, selectors, timelines, and quick actions. 
 - Do not introduce a parallel mini design system.
 - Avoid dense forms without hierarchy.
 - Keep copy short, operational, and non-technical for end users.
+- Reject UI that is merely functional but generic, noisy, or bureaucratic.
+
+## Acceptance check
+
+Before closing UI work, confirm:
+
+1. Primary action is obvious in seconds.
+2. Visual hierarchy is effortless to scan.
+3. Cards/modals/tables reduce cognitive load.
+4. No redundant copy, controls, or styling noise remains.
+5. The result feels like an intentional operational control surface.
 
 ## Common mistakes
 

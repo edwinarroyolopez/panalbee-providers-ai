@@ -1,24 +1,54 @@
-# Backend engineering rules (starter-aligned)
+# Backend Engineering Rules - backend-providers
 
-## 1. Role of the backend
+## 1. Backend role
 
-The backend is the **source of truth** for domain rules, data integrity, access control, and stable contracts for clients.
+`backend-providers` is the source of truth for:
 
-The frontend may guide experience; the backend **decides** what is allowed and what is true.
+- domain invariants
+- traceability
+- access control
+- API contracts consumed by `web-providers`
+
+No critical rule may depend only on frontend behavior.
 
 ---
 
-## 2. Core principle
+## 2. Active domain model priority
 
-> No critical rule should depend only on the client behaving correctly.
+Backend design must prioritize:
+
+- `estado` as current snapshot
+- `decision` as immutable operational event
+- `motivo` as structured reason data
+- `trazabilidad` as mandatory audit trail
+
+Do not collapse these concepts into a single generic status update.
 
 ---
 
-## 3. Modularity
+## 3. Active architecture and scope
 
-Organize by **bounded context** or domain module (auth, users, accounts, capabilities, uploads, etc.—extend as your product grows).
+- v1 scope is single-tenant internal (one organization).
+- v1 actor model starts with `admin`.
+- Auth identity is `telefono + password`.
 
-Preferred structure per module:
+Do not model `account/workspace/tier/billing` as backend defaults in v1.
+
+---
+
+## 4. Module boundaries
+
+Organize by bounded contexts aligned with the active domain:
+
+- `auth`
+- `users`
+- `providers`
+- `products`
+- `intake`
+- `decisions`
+- `exports`
+
+Recommended structure per module:
 
 ```txt
 src/
@@ -33,153 +63,118 @@ src/
     utils/
 ```
 
-Do not collapse boundaries without a strong reason.
+Keep controllers thin; keep business rules in services.
 
 ---
 
-## 4. Controllers and services
+## 5. Validation and intake integrity
 
-- Controllers: HTTP boundaries, validation pipes, orchestration.
-- Services: business logic, invariants, persistence coordination.
-
-Keep controllers thin.
-
----
-
-## 5. Validation and schemas
-
-Validate all incoming data. Keep DTOs and persistence schemas aligned with real rules, not with temporary UI shapes.
+- Validate every JSON intake payload before persistence.
+- Persist validation outcomes with batch (`intake_lote`) trace.
+- Reject silent partial inserts without explicit outcome reporting.
+- Keep DTO/schema constraints aligned with domain invariants, not temporary UI convenience.
 
 ---
 
-## 6. Persistence
+## 6. Decision and state invariants
+
+Backend must enforce at least:
+
+- `descartado` requires structured reason(s)
+- `priorizado` requires at least one structured reason
+- `aprobado` requires at least one structured reason
+- `aprobado` does not imply `exportado`
+- export eligibility requires `listo_para_exportar`
+
+Any transition violating these rules must fail with structured errors.
+
+---
+
+## 7. Traceability contract
+
+Every governed decision must persist:
+
+- `quien`
+- `cuando`
+- `que_decision`
+- `por_que` (reason codes + optional comment)
+
+No destructive or high-impact state transition should be accepted without traceability.
+
+---
+
+## 8. API contracts
+
+Contracts must be explicit, stable, and classifiable:
+
+- predictable response shapes
+- stable naming
+- typed decision and state enums
+- reason codes as structured values
+- errors mapped by class (`validation`, `forbidden`, `conflict`, `not_found`, `internal`)
+
+Clients must not infer business meaning from ambiguous payloads.
+
+---
+
+## 9. Persistence discipline
 
 - stable field names
-- explicit states where they matter
-- timestamps when they improve traceability or auditing
-- indexes justified by query patterns
-- avoid shaping the database only for one screen
+- timestamps for audit-sensitive records
+- indexes based on real query patterns
+- keep event-like decision history append-safe
+- do not model persistence around one screen only
 
 ---
 
-## 7. Access model (layered)
+## 10. Access control
 
-Design access in layers appropriate to your product:
+v1 has a simple actor model, but backend enforcement is still mandatory:
 
-### Roles
+- authenticated `admin` is required for protected operations
+- state-sensitive operations must be backend-gated
+- export endpoints must enforce eligibility states
 
-Who may **attempt** a class of actions.
-
-### Account-level permissions
-
-Fine-grained toggles for account-scoped behavior (keep them coherent; avoid boolean sprawl).
-
-### Capabilities and plans
-
-What is **enabled** for the account, workspace, or subscription tier.
-
-Every sensitive feature should answer:
-
-1. What enables it?
-2. Is it tied to a plan, role, capability, or tenant rule?
-3. What happens when access is blocked?
+Do not rely on hidden buttons as access control.
 
 ---
 
-## 8. Plan limits
+## 11. Error handling
 
-Limits are business rules. Each should have a clear source, name, user-visible consequence, and structured response—avoid generic “forbidden” for limit cases.
+Differentiate at minimum:
 
----
+- validation errors
+- unauthorized/forbidden
+- not found
+- conflict/invalid transition
+- export eligibility block
+- internal failure
 
-## 9. Upgrade-aware behavior
-
-If the product monetizes, the backend should explicitly resolve plan, entitlements, and structured block reasons for clients to render.
-
----
-
-## 10. Domain examples (illustrative only)
-
-The following are **patterns** many products use; implement only what your domain map requires:
-
-- **Commerce-style flows** — orders, payments, stock movements may need partial states, history, and linkage between documents.
-- **Inventory-style** — material changes should be explicit and traceable, not silent.
-- **Obligations** — separate “what happened” from “what is still owed” when both exist in your model.
-
-Adapt naming and modules to **your** glossary, not to any legacy app.
+Error payloads must support operational UI messaging.
 
 ---
 
-## 11. Traceability
-
-When the domain requires it, important actions should leave reconstructable traces (events, audit fields, or append-only history). Prefer explicit operations over hidden side effects.
-
----
-
-## 12. Contracts with clients
-
-Responses should be predictable: consistent naming, stable shapes, classifiable errors, reason codes when helpful. Clients should not guess business meaning from ambiguous payloads.
-
-If the product has multiple profiles or modes, contracts may expose **stable shared fields** plus clearly named specialized blocks.
-
----
-
-## 13. Error handling
-
-Differentiate at least: validation, not found, unauthorized/forbidden, limit reached, conflict, internal failure. Do not leak sensitive internals.
-
----
-
-## 14. Testing priorities
+## 12. Testing priorities
 
 Prioritize:
 
-1. services with domain logic
-2. guards and access checks
-3. capability and limit enforcement
-4. critical end-to-end flows defined in your feature map
+1. service-level invariants for state/decision/motivo
+2. intake validation and dedupe behavior
+3. guarded transitions and forbidden transitions
+4. export eligibility checks from `listo_para_exportar`
+5. cross-layer contract compatibility with `web-providers`
 
 ---
 
-## 15. What must never happen
+## 13. Cross-layer release gate
 
-Never:
+Backend work that changes behavior is complete only if:
 
-- put heavy logic only in controllers
-- trust the client for critical validation
-- duplicate access rules without ownership
-- mutate balances or stock without clear rules
-- return vague errors for meaningful business blocks
-- couple unrelated domains for short-term speed
-
----
-
-## 16. Final backend rule
-
-The backend must make the product **trustworthy**. If the system cannot enforce its own truth, the product becomes decorative.
-
----
-
-## 17. Profile-aware or multi-tenant backends
-
-When the product has multiple workspace types or tenants:
-
-- separate shared cross-cutting services from profile-specific orchestration
-- avoid one giant service accumulating unrelated conditionals
-- keep feature maps consistent across capability resolution, guards, and emitted context for clients
-
----
-
-## 18. Cross-layer release gate
-
-Backend changes that enable, block, or condition operational behavior should pass a cross-layer gate (see `agent-workflow.md`):
-
-1. DTO validation matches the real rule
+1. DTO validation matches real domain rules
 2. routes and parameters are explicit
-3. services enforce the rule
-4. persistence matches ownership and states
-5. client compatibility is explicit
-6. blocked responses are structured for clear UI
-7. domain ownership is correct (tenant vs account vs user scope)
+3. services enforce invariants
+4. persistence captures state and decision trace correctly
+5. client compatibility is confirmed
+6. blocked responses are structured for clear UX
 
-No backend feature is complete if clients cannot interpret its states safely.
+No backend feature is complete if `web-providers` cannot interpret it safely.

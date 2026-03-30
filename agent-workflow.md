@@ -1,271 +1,177 @@
-# Agent workflow (canonical)
+# Agent Workflow - Active Product
 
 ## Purpose
 
-This file defines how any coding agent should work **in the instantiated project** and in the **starter** repositories (`template-web`, `template-app`, `template-backend`).
+This file defines how coding agents execute work in the active product architecture:
 
-It is not a replacement for rule documents.  
-Rule documents define **what** must be respected.  
-This file defines **how** to approach the work.
+- `web-providers`
+- `backend-providers`
 
-### Mandatory companions
+Rule files define what must be respected. This file defines how to execute safely.
 
-1. `./instructions/instructions.md`
-2. `./instructions/product-rules.md`
-3. `./instructions/backend-rules.md`
-4. `./instructions/app-rules.md` (mobile); `./instructions/template-web-design-system.md` (web UI)
-5. `./instructions/template-governance-rules.md` (template extraction / hardening)
+## Mandatory companions
 
-Operational checklist: **`ai/START_NEW_PROJECT.md`**.
+Read before meaningful implementation:
 
-When building a **new product** from the starter, also use the filled copies of:
-
-- `instructions/project-context.template.md`
-- `instructions/domain-map.template.md`
-- `instructions/feature-map.template.md`
-- `instructions/glossary.template.md`
-
-Read them before doing meaningful work.
+1. `ai/instructions/instructions.md`
+2. `ai/instructions/project-context.md`
+3. `ai/instructions/domain-map.md`
+4. `ai/instructions/feature-map.md`
+5. `ai/instructions/glossary.md`
+6. `ai/instructions/product-rules.md`
+7. `ai/instructions/backend-rules.md`
+8. `ai/instructions/template-web-design-system.md` when changing `web-providers`
 
 ---
 
 ## Core principle
 
-> Do not jump into code just because the request sounds clear.
+Do not jump into code because a request sounds obvious.
 
-A good implementation must preserve:
+A good change preserves:
 
-- product clarity (per the project’s context)
-- architectural consistency
-- UX coherence on each surface
-- backend ↔ client contract stability
-- permission, capability, and plan logic when they exist
-- traceability when the domain requires it
+- domain clarity
+- clean architecture
+- backend-client contract integrity
+- decision traceability
+- operational UX clarity
 - maintainability
 
-If code is added fast but damages the system, it is not a good implementation.
+## Master UX/UI rule (mandatory)
+
+For any UI work in `web-providers` (components, pages, layouts, tables, cards, modals, forms, review flows, interaction states, copy), apply a reduction-first operational quality bar equivalent to top-tier product craft.
+
+Non-negotiable expectations:
+
+- clarity over ornament
+- hierarchy over noise
+- direct action over bureaucracy
+- speed of comprehension and operation
+- consistency across the full surface
+
+UI must feel like a premium operational control surface, not a generic admin dashboard.
+
+Before accepting a UI change, verify:
+
+1. Can this be simplified without losing operational power?
+2. Is the primary action obvious at first glance?
+3. Does visual hierarchy guide the eye with minimal effort?
+4. Is there any avoidable visual/textual noise?
+5. Does the interaction improve decision speed and confidence?
+6. Does this look and behave as one coherent system?
+
+If any answer is weak, the UI is not ready.
 
 ---
 
-## Phase 1 — Project instantiation (before feature development)
+## Active-domain principle
 
-Run this when **spinning up a new product** from the starter (new repo or new clone).
+The source of truth is the active product domain, not the historical starter.
 
-1. **Clone or copy** the relevant starters (`template-web`, `template-app`, `template-backend`).
-2. **Define identity** — name, users, environments (see `project-context.template.md`).
-3. **Define domain** — entities, language, boundaries (`domain-map.template.md`).
-4. **Define surfaces** — which clients ship in v1; align env and API base URLs.
-5. **Define auth model** — how users prove identity; token/session rules.
-6. **Define tenancy** — none, account-scoped, workspace-scoped, or hybrid; default data scope.
-7. **Define capabilities** — optional feature flags, plans, entitlements; how they are enforced (backend-first).
-8. **Define bounded contexts** — module ownership; what stays starter-core vs example vs product.
-9. **Prune examples** — remove or quarantine sample modules, copy, and routes that do not belong to the new product.
-10. **Record decisions** in the filled templates so Phase 2 agents can read one source of truth.
+Before implementing, confirm:
 
-Do not start large feature work until the **project context** and **feature map** are at least minimally filled.
+- which entity and workflow step is affected (`proveedor`, `producto`, `intake`, `decision`, `exportacion`)
+- whether the change touches `estado`, `decision`, `motivo`, or traceability
+- whether the change belongs to `backend-providers`, `web-providers`, or both
 
 ---
 
-## Phase 2 — Ongoing development (after instantiation)
+## Standard execution sequence
 
-Once Phase 1 is satisfied:
-
-- follow the **standard workflow** below on every task
-- treat `instructions.md` + filled templates as the definition of **the product**
-- implement on **the current web**, **the current app**, and/or **the current backend** as scoped in the request
-- reuse starter patterns without dragging in **legacy domain** names or flows removed at instantiation
-
----
-
-## Domain-aware principle
-
-**The active domain** is whatever the filled **domain map** and **glossary** say it is—not a fixed industry baked into the starter.
-
-Before implementing, confirm whether behavior should:
-
-- reuse the shared shell and patterns
-- adapt vocabulary, entities, and flows to the active domain
-- be enabled or disabled by capabilities, plans, or profile
-
-Avoid static assumptions like “one flow fits all customers” when the product defines multiple profiles.
-
----
-
-## Standard workflow
-
-Every task should follow this sequence:
-
-1. Understand the request
-2. Identify domain / profile context (from templates when available)
-3. Identify affected layers (product, backend, app, web, cross-layer)
-4. Read the relevant files
-5. Identify existing patterns in **the current** codebase
-6. Define the business rule in plain language
-7. Define contract changes (if any)
-8. Implement safely
-9. Verify consistency
-10. Test or validate logically
-11. Run the implementation audit gate when required
-12. Summarize what changed and follow-ups
+1. Understand the request in domain language.
+2. Identify affected workflow stage.
+3. Identify affected layers (`backend-providers`, `web-providers`, cross-layer).
+4. Read relevant files and existing patterns.
+5. State the business rule in plain language.
+6. Define contract impact (if any).
+7. Implement safely.
+8. Validate consistency and invariants.
+9. Test/validate expected behaviors.
+10. Run implementation audit when needed.
+11. Update documentation when durable rules changed.
+12. Report outcome and residual risks.
 
 Do not skip steps.
 
 ---
 
-## 1. Understand the request
+## Business rule check (mandatory)
 
-Rewrite the task in precise terms. Ask:
+Before coding, write the rule as:
 
-- What problem is actually being solved?
-- Is this product, backend, app, web, or cross-layer?
-- New feature, fix, refactor, or UX improvement?
-- Is there a hidden business rule?
-- Does it affect roles, capabilities, plans, or upgrades?
+- current behavior
+- desired behavior
+- blocking conditions
+- traceability impact
 
----
-
-## 2. Identify domain / profile context
-
-When templates exist:
-
-- Which profile, workspace, or mode is affected?
-- Which entities and language apply?
-- What remains shared across profiles?
-- Which capabilities gate the behavior?
-
-Design so the product can evolve without duplicating entire clients.
+If this cannot be stated clearly, implementation is premature.
 
 ---
 
-## 3. Identify affected layers
+## Cross-layer contract discipline
 
-**Product** — meaning, flows, vocabulary, gating, what the user should understand.
+For backend-client work:
 
-**Backend** — rules, validation, permissions, schemas, services, APIs, invariants.
+- backend defines contract truth
+- all consumers must be updated
+- errors must be classifiable and operationally meaningful
+- avoid transitional ambiguity
 
-**App / web** — screens, navigation, components, states, gating UI, offline/sync (app).
-
-Treat multi-layer tasks as **cross-layer**; do not implement as if local to one file.
-
----
-
-## 4. Read relevant files first
-
-Locate modules, services, controllers, screens, hooks, DTOs, guards, and existing tests. Prefer extending patterns over inventing new ones.
+Use `ai/skills/backend-app-contract-sync.skill.md` as needed.
 
 ---
 
-## 5. Identify existing patterns
+## Airlock domain invariants (must hold)
 
-Before creating anything new, search for similar modules, guards, forms, lists, loaders, and gating. Preference order: reuse → extend → create.
-
----
-
-## 6. Define the business rule explicitly
-
-State the rule in plain language. If you cannot, you are not ready to code it cleanly.
-
----
-
-## 7. Define contract impact
-
-For backend ↔ client work: request/response shape, errors, new fields, gating semantics. Update **all** consumers. Avoid ambiguous transitional APIs.
+- `estado` is snapshot, not explanation.
+- `decision` is the operational event explaining state transitions.
+- `motivo` is structured reason data, not optional decoration.
+- `descartado` requires reason.
+- `priorizado` and `aprobado` require at least one structured reason.
+- `aprobado` is not `exportado`.
+- export is allowed only from `listo_para_exportar`.
 
 ---
 
-## 8. Implement safely
+## Implementation audit gate
 
-Small, cohesive changes; clear naming; explicit logic; respect module boundaries.
-
-### Backend
-
-Thin controllers; logic in services; validate input; enforce access; meaningful errors; traceability when needed.
-
-### App / web
-
-Respect shell and navigation; reuse components; loading / empty / error / blocked states; gating and copy aligned with glossary.
-
-### Cross-layer
-
-Business rule clarity first; contract second; backend truth before client interpretation; same language both sides.
-
----
-
-## 9. Validate consistency
-
-Check alignment with product intent, patterns, UX, access model, contracts, and complexity.
-
----
-
-## 10. Testing and validation
-
-Validate success, invalid input, unauthorized, limits, empty, loading, error, retry, offline (if relevant). Use project-defined commands.
-
----
-
-## 11. Implementation audit gate
-
-Before calling a task done when the change is cross-layer, new operational flow, or gating-sensitive, run an explicit audit:
+Run an explicit audit for cross-layer, gating-sensitive, or state-machine changes:
 
 1. real entrypoint and navigation continuity
-2. contract alignment across consumers
-3. DTO / schema / persistence coherence
-4. backend enforcement for critical blocks
-5. client blocked / pending / ready / error / success states
-6. help keys and content (if used)
+2. contract alignment across all consumers
+3. DTO/schema/persistence coherence
+4. backend enforcement of critical rules
+5. loading/blocked/error/success states in UI
+6. traceability completeness (`quien`, `cuando`, `que_decision`, `por_que`)
 7. validation commands executed and reported
 
-Use `skills/implementation-release-audit.skill.md` and, when appropriate, `agents/implementation-auditor.agent.md`.
+Use:
+
+- `ai/skills/implementation-release-audit.skill.md`
+- `ai/agents/implementation-auditor.agent.md` when a formal verdict is needed
 
 ---
 
-## 12. Refactors, features, bugs, UX, access control
+## Documentation update rule
 
-Same discipline as before: preserve behavior unless intentional; fix root causes; access work must answer who sees, who acts, what blocks, and how it is enforced on the backend.
+When a durable domain rule changes, update:
 
----
+- `ai/instructions/domain-map.md`
+- `ai/instructions/feature-map.md`
+- `ai/instructions/glossary.md`
 
-## 13. Documentation updates
-
-When introducing durable rules (capabilities, limits, contracts, patterns), update the filled templates or rule docs—do not rely only on code.
-
----
-
-## 14. Final output expectations
-
-Summarize: what changed, why, modules touched, layers, contracts, access implications, risks, reusable patterns.
+Do not leave durable behavior documented only in code.
 
 ---
 
-## 15. Pace
+## Agent and skill map (active)
 
-Move fast only when clarity is preserved. **The project** should grow with discipline, not by accident.
+| Concern | Use |
+|--------|-----|
+| Domain workflow design | `ai/agents/domain-workflow-architect.agent.md`, `ai/skills/business-workflow-design.skill.md` |
+| Contract sync | `ai/agents/contract-integrator.agent.md`, `ai/skills/backend-app-contract-sync.skill.md` |
+| Operational UX | `ai/agents/operational-ux-guardian.agent.md`, `ai/skills/operational-ui-flow-builder.skill.md` |
+| State traceability | `ai/skills/operational-state-traceability.skill.md` |
+| Release audit | `ai/agents/implementation-auditor.agent.md`, `ai/skills/implementation-release-audit.skill.md` |
 
----
-
-## 16. Template transformation lane
-
-When the task is extraction / hardening / reusable output for `template-web`, `template-app`, or `template-backend`:
-
-1. Run `skills/template-readiness-audit.skill.md`
-2. Classify pieces (`REUSABLE` / `ADAPT` / `EXAMPLE_ONLY` / `REMOVE` / `QUARANTINE`)
-3. Define boundaries (core starter, domain, examples, legacy)
-4. Run decoupling / folder-boundary / optimization skills as needed
-5. Close with `agents/template-release-auditor.agent.md`
-
-Recommended agents: `template-system-architect`, `template-web-component-governor`, `template-contract-boundary-guardian`, `template-release-auditor`.
-
-Mandatory output: readiness matrix, boundary map, prioritized actions, residual risks.
-
----
-
-## 17. Agent and skill map (reference)
-
-| Concern | Agent / skill |
-|--------|----------------|
-| Cross-layer contracts | `agents/contract-integrator.agent.md`, `skills/backend-app-contract-sync.skill.md` |
-| Domain workflows | `agents/domain-workflow-architect.agent.md`, `skills/business-workflow-design.skill.md` |
-| UX operations | `agents/operational-ux-guardian.agent.md`, `skills/operational-ui-flow-builder.skill.md` |
-| Profile / capability architecture | `agents/specialization-context-architect.agent.md`, `skills/capability-profile-feature-gating.skill.md`, `skills/dashboard-composition-by-profile.skill.md` |
-| Release quality | `agents/implementation-auditor.agent.md`, `skills/implementation-release-audit.skill.md` |
-| Template hardening | `agents/template-*.agent.md`, `skills/template-*.skill.md` |
+Template-hardening agents/skills are not active for this product phase.

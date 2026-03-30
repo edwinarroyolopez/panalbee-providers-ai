@@ -16,7 +16,7 @@ A successful build does not imply release readiness. Changes can compile yet fai
 - Finds orphan routes or UIs without backend support.
 - Checks help keys and actionable content when the product uses help.
 - Verifies gating is enforced on the backend, not only hidden in UI.
-- Validates ownership (tenant/account/domain scope).
+- Validates ownership (organization/domain scope).
 
 ## When to use
 
